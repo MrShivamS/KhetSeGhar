@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>KhetSeGhar - Connecting Villages to Housing Societies</title>
+  
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary-green: #1B4332;
+      --secondary-green: #2D6A4F;
+      --accent-orange: #E76F51;
+      --bg-cream: #FAF7F2;
+      --card-bg: #FFFFFF;
+      --text-dark: #2B2D42;
+      --text-muted: #6C757D;
+      --border-color: #E2E8F0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* --- VIDEO OVERLAY (Desktop Only) --- */
+    #video-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh; 
+      background-color: #000;
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #video-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #intro-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .skip-btn {
+      position: absolute;
+      bottom: 40px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 22px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.85rem;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Disable Video Overlay on Phone View (< 768px) */
+    @media (max-width: 767px) {
+      #video-overlay {
+        display: none !important;
+      }
+    }
+
+    /* --- NAVBAR --- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background: rgba(250, 247, 242, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5%;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .nav-logo img {
+      height: 10vh;
+      width: auto;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--secondary-green);
+    }
+
+    .nav-badge {
+      background-color: rgba(231, 111, 81, 0.15);
+      color: var(--accent-orange);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* --- HERO SECTION --- */
+    .hero-section {
+      position: relative;
+      padding: 5rem 5% 6rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(180deg, #FAF7F2 0%, #E8F5E9 100%);
+      overflow: hidden;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: rgba(45, 106, 79, 0.1);
+      color: var(--secondary-green);
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: 2.8rem;
+      color: var(--primary-green);
+      font-weight: 700;
+      max-width: 800px;
+      line-height: 1.25;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin-bottom: 2rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 3rem;
+      z-index: 2;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-green);
+      color: #fff;
+      border: 2px solid var(--primary-green);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--secondary-green);
+      border-color: var(--secondary-green);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--accent-orange);
+      border: 2px solid var(--accent-orange);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    /* Hero Background Illustration Element */
+    .hero-illustration {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      width: 100%;
+      max-width: 900px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(5px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+
+    .ill-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--secondary-green);
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    .ill-item i {
+      font-size: 1.8rem;
+      background: #fff;
+      padding: 15px;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    /* --- GENERAL SECTIONS --- */
+    section {
+      padding: 5rem 5%;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      color: var(--primary-green);
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .section-desc {
+      text-align: center;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 3rem;
+      font-size: 1.05rem;
+    }
+
+    /* --- ABOUT SECTION --- */
+    .about-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 3rem;
+      max-width: 850px;
+      margin: 0 auto;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    /* --- VISION CARDS --- */
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .vision-card, .module-card {
+      background: var(--card-bg);
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+    }
+
+    .vision-card:hover, .module-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      color: var(--secondary-green);
+      margin-bottom: 1rem;
+    }
+
+    .vision-card h3, .module-card h3 {
+      font-size: 1.2rem;
+      color: var(--primary-green);
+      margin-bottom: 0.5rem;
+    }
+
+    .vision-card p, .module-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* --- TIMELINE SECTION --- */
+    .timeline {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      padding-left: 20px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 35px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #D8E2DC;
+    }
+
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .status-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      z-index: 2;
+    }
+
+    .status-icon.completed {
+      background-color: #2D6A4F;
+      color: #fff;
+    }
+
+    .status-icon.in-progress {
+      background-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    .status-icon.pending {
+      background-color: #E2E8F0;
+      color: var(--text-muted);
+    }
+
+    .timeline-text {
+      background: var(--card-bg);
+      padding: 0.8rem 1.2rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-weight: 600;
+      font-size: 0.95rem;
+      flex: 1;
+    }
+
+    /* --- STAY UPDATED --- */
+    .subscribe-container {
+      background: var(--primary-green);
+      color: #fff;
+      border-radius: 20px;
+      padding: 3.5rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .subscribe-container h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subscribe-form {
+      display: flex;
+      gap: 10px;
+      max-width: 500px;
+      margin: 2rem auto 0;
+    }
+
+    .subscribe-form input {
+      flex: 1;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    .subscribe-form button {
+      background-color: var(--accent-orange);
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* --- FOOTER --- */
+    footer {
+      background-color: #112A20;
+      color: #A3B18A;
+      text-align: center;
+      padding: 2.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    footer p.tagline {
+      margin-top: 5px;
+      color: #DAD7CD;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .nav-links { display: none; } /* Simplified mobile header */
+      .hero-title { font-size: 2rem; }
+      .hero-illustration { flex-wrap: wrap; gap: 1rem; }
+      .subscribe-form { flex-direction: column; }
+      .hero-buttons { flex-direction: column; width: 100%; max-width: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. VIDEO OVERLAY (DESKTOP ONLY) -->
+  <div id="video-overlay">
+    <video id="intro-video" autoplay muted playsinline webkit-playsinline>
+      <source src="intro.mp4" type="video/mp4" />
+    </video>
+    <button class="skip-btn" onclick="hideVideo()">
+      <span>Skip Intro</span> <i class="fa-solid fa-forward"></i>
+    </button>
+  </div>
+
+  <!-- 2. NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-logo">
+      <img src="Logo.png" alt="KhetSeGhar Logo">
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <span class="nav-badge"><i class="fa-solid fa-clock"></i> Coming Soon</span>
+  </nav>
+
+  <!-- 3. HERO SECTION -->
+  <header id="home" class="hero-section">
+    <div class="hero-badge">
+      <i class="fa-solid fa-leaf"></i> Direct From Farms To Societies
+    </div>
+    <h1 class="hero-title">Connecting Villages to Housing Societies</h1>
+    <p class="hero-subtitle">
+      A digital bulk procurement platform that connects verified farmer networks through Village Hubs, making grocery sourcing transparent, efficient, and affordable.
+    </p>
+    
+    <div class="hero-buttons">
+      <a href="#about" class="btn btn-primary">Explore Project</a>
+      <a href="#stay-updated" class="btn btn-outline">Coming Soon</a>
+    </div>
+
+    <!-- Background Illustration Grid -->
+    <div class="hero-illustration">
+      <div class="ill-item">
+        <i class="fa-solid fa-tree"></i>
+        <span>Village</span>
+      </div>
+      <div class="ill-item">
+        <i class="fa-solid fa-tractor"></i>
+        <span>Farms</span>
+      </div>
+      <div class="ill-item">
+        <i class="fa-solid fa-wheat-awn"></i>
+        <span>Grains</span>
+      </div>
+      <div class="ill-item">
+        <i class="fa-solid fa-warehouse"></i>
+        <span>Warehouse</span>
+      </div>
+      <div class="ill-item">
+        <i class="fa-solid fa-city"></i>
+        <span>Houses</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- 4. ABOUT SECTION -->
+  <section id="about">
+    <h2 class="section-title">🌾 About KhetSeGhar</h2>
+    <div class="about-card">
+      <p style="font-size: 1.15rem; color: #333;">
+        KhetSeGhar is building a transparent farm-to-society supply chain where housing societies can procure grains, pulses, and other agricultural products directly from verified Village Hubs.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. VISION SECTION -->
+  <section id="vision" style="background-color: rgba(255, 255, 255, 0.5);">
+    <h2 class="section-title">🚀 Our Vision</h2>
+    <p class="section-desc">Reinventing bulk grocery sourcing with technology and fairness.</p>
+    
+    <div class="grid-4">
+      <div class="vision-card">
+        <div class="card-icon"><i class="fa-solid fa-seedling"></i></div>
+        <h3>Fair Pricing</h3>
+        <p>Helping farmers receive better value by removing unnecessary intermediaries.</p>
+      </div>
+      <div class="vision-card">
+        <div class="card-icon"><i class="fa-solid fa-house-chimney-window"></i></div>
+        <h3>Direct Procurement</h3>
+        <p>Connecting residential housing societies directly with producing villages.</p>
+      </div>
+      <div class="vision-card">
+        <div class="card-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <h3>Bulk Supply</h3>
+        <p>Tailored specifically for apartment associations and society management.</p>
+      </div>
+      <div class="vision-card">
+        <div class="card-icon"><i class="fa-solid fa-handshake"></i></div>
+        <h3>Transparency</h3>
+        <p>Verified agricultural inventory and trusted direct sourcing pipelines.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. PLATFORM MODULES -->
+  <section id="modules">
+    <h2 class="section-title">👨‍🌾 Platform Modules</h2>
+    <p class="section-desc">An integrated ecosystem serving every stakeholder in the chain.</p>
+    
+    <div class="grid-4">
+      <div class="module-card">
+        <div class="card-icon"><i class="fa-solid fa-user-gear"></i></div>
+        <h3>Farmer Hub</h3>
+        <p>Manage crops, yields, and harvest readiness.</p>
+      </div>
+      <div class="module-card">
+        <div class="card-icon"><i class="fa-solid fa-store"></i></div>
+        <h3>Village Hub</h3>
+        <p>Aggregation centers handling quality checks and local logistics.</p>
+      </div>
+      <div class="module-card">
+        <div class="card-icon"><i class="fa-solid fa-building-user"></i></div>
+        <h3>Society Hub</h3>
+        <p>Order placement, bulk tracking, and payment clearance for housing committees.</p>
+      </div>
+      <div class="module-card">
+        <div class="card-icon"><i class="fa-solid fa-sliders"></i></div>
+        <h3>Admin Control</h3>
+        <p>Centralized monitoring, verification, and end-to-end management.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. DEVELOPMENT STATUS -->
+  <section id="status" style="background-color: rgba(255, 255, 255, 0.5);">
+    <h2 class="section-title">🚧 Development Status</h2>
+    <p class="section-desc">See how far along we are on building KhetSeGhar.</p>
+    
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="status-icon completed"><i class="fa-solid fa-check"></i></div>
+        <div class="timeline-text">Research</div>
+      </div>
+      <div class="timeline-item">
+        <div class="status-icon completed"><i class="fa-solid fa-check"></i></div>
+        <div class="timeline-text">Planning</div>
+      </div>
+      <div class="timeline-item">
+        <div class="status-icon completed"><i class="fa-solid fa-check"></i></div>
+        <div class="timeline-text">UI Design</div>
+      </div>
+      <div class="timeline-item">
+        <div class="status-icon in-progress"><i class="fa-solid fa-rotate"></i></div>
+        <div class="timeline-text">Development (In Progress)</div>
+      </div>
+      <div class="timeline-item">
+        <div class="status-icon pending"><i class="fa-solid fa-hourglass-start"></i></div>
+        <div class="timeline-text">Testing</div>
+      </div>
+      <div class="timeline-item">
+        <div class="status-icon pending"><i class="fa-solid fa-rocket"></i></div>
+        <div class="timeline-text">Deployment</div>
+      </div>
+    </div>
+
+    <p style="text-align: center; margin-top: 2.5rem; color: var(--text-muted); font-size: 0.95rem;">
+      KhetSeGhar is currently under active development. New features and modules will be released progressively.
+    </p>
+  </section>
+
+  <!-- 8. STAY UPDATED -->
+  <section id="stay-updated">
+    <div class="subscribe-container">
+      <h2>📩 Stay Updated</h2>
+      <p style="color: #D8E2DC;">Be the first to know when our platform officially launches.</p>
+      
+      <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+        <input type="email" placeholder="Enter your Email Address" required />
+        <button type="submit">Notify Me</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- 9. FOOTER -->
+  <footer id="contact">
+    <h3>KhetSeGhar</h3>
+    <p class="tagline">Connecting Villages to Housing Societies</p>
+    <p style="margin-top: 1.5rem; font-size: 0.8rem; color: #6c757d;">
+      &copy; 2026 KhetSeGhar. All Rights Reserved.
+    </p>
+  </footer>
+
+  <!-- SCRIPT FOR VIDEO -->
+  <script>
+    const video = document.getElementById('intro-video');
+    const overlay = document.getElementById('video-overlay');
+
+    function hideVideo() {
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+      if (video) {
+        video.pause();
+      }
+    }
+
+    if (video) {
+      video.addEventListener('ended', hideVideo);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Automatically disable video on smaller screens (< 768px)
+      if (window.innerWidth < 768 && video) {
+        video.pause();
+      }
+    });
+  </script>
+</body>
+</html>
