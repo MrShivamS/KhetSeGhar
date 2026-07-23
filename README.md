@@ -1,5 +1,4 @@
 # KhetSeGhar
-(https://deepwiki.com/MrShivamS/KhetSeGhar)
 
 This repository contains the source code for the landing page of KhetSeGhar, a digital platform designed to connect villages directly to housing societies for bulk grocery procurement. The project aims to create a transparent, efficient, and affordable farm-to-society supply chain.
 
